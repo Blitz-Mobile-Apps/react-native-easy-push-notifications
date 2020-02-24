@@ -18,8 +18,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 11
-        versionName "1.1.1"
+        versionCode 12
+        versionName "1.1.2"
     }
     lintOptions {
         abortOnError false
@@ -36,5 +36,6 @@ repositories {
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
+    implementation "com.google.firebase:firebase-messaging:$project.firebase_messaging"
 }
   

@@ -50,6 +50,7 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
     try{
       Log.d("init_init",isInit.toString());
       FirebaseApp.initializeApp(getReactApplicationContext().getApplicationContext());
+
       isInit = true;
       Log.d("init_init",isInit.toString());
     }catch (Exception e){

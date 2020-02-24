@@ -9,15 +9,18 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -36,7 +39,6 @@ public class NotificationsService extends FirebaseMessagingService {
     public static Map notificationData;
     public static String summaryText = "This is summary";
     private NotificationManager mNotificationManager;
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         message = remoteMessage;
@@ -79,7 +81,20 @@ public class NotificationsService extends FirebaseMessagingService {
             mBuilder.setColor(Color.parseColor(colorString));
         }
         mBuilder.setContentIntent(pendingIntent);
-//        mBuilder.setSmallIcon(R.mipmap.notifications_icon);
+
+        try
+        {
+            PackageManager manager = getPackageManager();
+            Resources resources = manager.getResourcesForApplication(getApplicationContext().getPackageName());
+            int resId = resources.getIdentifier("notifications_icon", "drawable", getApplicationContext().getPackageName());
+            mBuilder.setSmallIcon(resId);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+;
         mBuilder.setContentTitle(message.getNotification().getTitle());
         mBuilder.setContentText(message.getNotification().getBody());
         mBuilder.setPriority(Notification.PRIORITY_MAX);
@@ -101,7 +116,7 @@ public class NotificationsService extends FirebaseMessagingService {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
-            String channelId = "notify_001";
+            String channelId = "blitz_remote_notification_channel";
             NotificationChannel channel = new NotificationChannel(
                     channelId,
                     getPackageManager().getApplicationLabel(getApplicationInfo()),
