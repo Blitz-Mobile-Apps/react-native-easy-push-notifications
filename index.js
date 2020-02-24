@@ -27,7 +27,8 @@ export default {
     },
     getLastNotificationData: (callback, errorCallback) => {
         if (Platform.OS === 'android') {
-            notificationModule.getIntent(notification => {
+            notificationModule.getLastNotificationData(notification => {
+                console.log(notification)
                 try {
                     if (typeof notification === 'string') {
                         let data = JSON.parse(notification)
@@ -40,7 +41,7 @@ export default {
                 }
             })
         } else {
-            notificationModule.getNotificationData(notification => {
+            notificationModule.getLastNotificationData(notification => {
                 console.log('bno ',notification)
                 // try {
                 //     if (typeof notification === 'string') {
@@ -60,7 +61,7 @@ export default {
                 console.log(event)
                 if (event) {
                     let data = event
-                    callback(data)
+                    callback(JSON.parse(data))
                 }
             })
 

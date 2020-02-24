@@ -1,5 +1,6 @@
 package com.blitzapp.module.push;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,8 +11,12 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -31,19 +36,38 @@ import java.util.Set;
 public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   public static String deviceId = null;
   public static Boolean isInit = false;
+  public static ReactContext rc;
+  private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+    @Override
+    public void onNewIntent(Intent intent) {
+      super.onNewIntent(intent);
+      Log.d("asdasd",intent.getData().toString());
+    }
+
+    @Override
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
+
+      Log.d("asdasd",intent.getData().toString());
+
+      if (requestCode == 10120) {
+      }
+    }
+  };
   public RNEasyPushNotificationsModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    rc = reactContext;
+    reactContext.addActivityEventListener(mActivityEventListener);
+//    NotificationsService.setMainActivity(getReactApplicationContext().getBaseContext().getClass());
     this.init();
     BroadcastReceiver geoLocationReceiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
         String json = intent.getStringExtra("data");
-
-
         sendMessage("notificationReceived",json);
       }
     };
     LocalBroadcastManager.getInstance(getReactApplicationContext()).registerReceiver(geoLocationReceiver, new IntentFilter("notificationReceived"));
+
   }
   @ReactMethod
   public void init(){
@@ -83,26 +107,16 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
     return map;
   }
   @ReactMethod
-  public void getIntent(Callback callback){
+  public void getLastNotificationData(Callback callback){
     if(isInit == false){
       this.init();
     }
-      Intent intent = getCurrentActivity().getIntent();
-      Bundle extras = intent.getExtras();
-      if(extras != null){
-        Map dataMap;
-        dataMap = bundleToMap(extras);
-
-        if(dataMap != null){
-          JSONObject json = new JSONObject(dataMap);
-
-          String str = json.toString();
-          callback.invoke(str);
-        }
-
+    if(NotificationsService.message != null){
+      if(NotificationsService.message.getData() != null){
+        callback.invoke(new JSONObject(NotificationsService.message.getData()).toString());
+        NotificationsService.message = null;
       }
-
-
+    }
   }
   @ReactMethod
   public void registerForToken(final Callback onRegister){

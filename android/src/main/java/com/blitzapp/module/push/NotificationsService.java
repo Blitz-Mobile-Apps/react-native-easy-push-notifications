@@ -32,19 +32,24 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-
+//import com.blitzapp.module.push.RNEasyPushNotificationsModule.rc;
 public class NotificationsService extends FirebaseMessagingService {
     public static RemoteMessage message;
     public static String EXTRA_PAYLOAD = null;
     public static Map notificationData;
     public static String summaryText = "This is summary";
     private NotificationManager mNotificationManager;
+    private static Class mainActivity;
+    public static void setMainActivity(Class activity){
+        mainActivity = activity;
+    }
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         message = remoteMessage;
 
         showNotification();
         sendMessage();
+
     }
     private void sendMessage() {
         try {
@@ -65,12 +70,14 @@ public class NotificationsService extends FirebaseMessagingService {
             EXTRA_PAYLOAD = message.getData().toString();
         }
         ActivityManager am = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+        ComponentName cn = am.getRunningTasks(3).get(0).baseActivity;
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext(), "notify_001");
-        Intent i = new Intent(getApplicationContext(),cn.getClass());
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 100, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent i = new Intent(getApplicationContext(),RNEasyPushNotificationsModule.rc.getCurrentActivity().getClass());
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pi = PendingIntent.getActivity(this, 100, new Intent(this, RNEasyPushNotificationsModule.rc.getCurrentActivity().getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pi);
 
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
         bigText.bigText(message.getNotification().getBody());
@@ -80,7 +87,7 @@ public class NotificationsService extends FirebaseMessagingService {
             String colorString = message.getNotification().getColor();
             mBuilder.setColor(Color.parseColor(colorString));
         }
-        mBuilder.setContentIntent(pendingIntent);
+
 
         try
         {
