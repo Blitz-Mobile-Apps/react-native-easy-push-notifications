@@ -1,6 +1,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.blitzapp.module.push">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.blitzapp.module.push">
 
 </manifest>
   
