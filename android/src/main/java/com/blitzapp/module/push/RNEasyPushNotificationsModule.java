@@ -59,7 +59,7 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   }
   @Override
   public String getName() {
-    return "reactNativeEasyNotifications";
+    return "BlitzNotifications";
   }
 
   public void sendMessage(String name, String data) {
