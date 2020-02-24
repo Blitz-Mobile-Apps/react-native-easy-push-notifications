@@ -1,12 +1,12 @@
 
 Pod::Spec.new do |s|
   s.name         = "RNEasyPushNotificationsModule"
-  s.version      = "1.1.0"
+  s.version      = "1.1.6"
   s.summary      = "RNEasyPushNotificationsModule"
   s.description  = <<-DESC
                   RNEasyPushNotifications
                    DESC
-  s.homepage     = ""
+  s.homepage     = "https://github.com/Blitz-Mobile-Apps/react-native-easy-push-notifications.git"
   s.license      = "MIT"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
   s.author             = { "author" => "alex.evans123@gmail.com" }
