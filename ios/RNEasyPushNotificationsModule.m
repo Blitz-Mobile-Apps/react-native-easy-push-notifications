@@ -8,7 +8,7 @@ extern NSDictionary *remoteNotification = @"NULL";
 
 @implementation RNEasyPushNotificationsModule
 
-RCT_EXPORT_MODULE(RNEasyPushNotificationsModule);
+RCT_EXPORT_MODULE(notificationModule);
 
 + (id)allocWithZone:(NSZone *)zone {
   static RNEasyPushNotificationsModule *sharedInstance = nil;

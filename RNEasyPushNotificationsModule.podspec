@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "RNEasyPushNotificationsModule"
-  s.version      = "1.1.8"
+  s.version      = "1.1.9"
   s.summary      = "RNEasyPushNotificationsModule"
   s.description  = <<-DESC
                   RNEasyPushNotifications
