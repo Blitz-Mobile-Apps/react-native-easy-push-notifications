@@ -4,8 +4,8 @@
 #else
 #import <React/RCTBridgeModule.h>
 #endif
-
-@interface RNEasyPushNotifications : NSObject <RCTBridgeModule>
+#import <React/RCTEventEmitter.h>
+@interface RNEasyPushNotificationsModule : RCTEventEmitter <UIApplicationDelegate, RCTBridgeModule>
 
 @end
   
