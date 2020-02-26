@@ -1,6 +1,6 @@
 #import "RNEasyPushNotificationsModule.h"
 #import <React/RCTConvert.h>
-#import <FirebaseMessaging.h>
+#import "FirebaseMessaging.h"
 #import "Firebase.h"
 @import UserNotifications;
 extern NSString *device_id = NULL;
