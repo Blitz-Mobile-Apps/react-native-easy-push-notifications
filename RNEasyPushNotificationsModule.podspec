@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "RNEasyPushNotificationsModule"
-  s.version      = "1.1.9"
+  s.version      = "1.2.0"
   s.summary      = "RNEasyPushNotificationsModule"
   s.description  = <<-DESC
                   RNEasyPushNotifications
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.dependency "React"
   s.dependency "Firebase/Messaging"
   #s.dependency "others"
-  s.static_framework    = false
+  s.static_framework    = true
 end
 
   

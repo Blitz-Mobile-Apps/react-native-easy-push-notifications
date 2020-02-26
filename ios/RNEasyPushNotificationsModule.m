@@ -8,7 +8,7 @@ extern NSDictionary *remoteNotification = @"NULL";
 
 @implementation RNEasyPushNotificationsModule
 
-RCT_EXPORT_MODULE(notificationModule);
+RCT_EXPORT_MODULE(BlitzNotifications);
 
 + (id)allocWithZone:(NSZone *)zone {
   static RNEasyPushNotificationsModule *sharedInstance = nil;
@@ -33,9 +33,10 @@ RCT_EXPORT_METHOD(registerForToken)
 {
 
   dispatch_async(dispatch_get_main_queue(), ^{
-      [FIRApp configure];
-     UIApplication *application = UIApplication.sharedApplication;
-    [FIRMessaging messaging].delegate = self;
+NSLog(@"asdasd");
+    [FIRApp configure];
+    UIApplication *application = UIApplication.sharedApplication;
+    [FIRMessaging messaging].delegate = application.delegate;
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
     
    if ([UNUserNotificationCenter class] != nil) {

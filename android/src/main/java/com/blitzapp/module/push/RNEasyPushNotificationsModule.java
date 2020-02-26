@@ -37,27 +37,16 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   public static String deviceId = null;
   public static Boolean isInit = false;
   public static ReactContext rc;
-  private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
-    @Override
-    public void onNewIntent(Intent intent) {
-      super.onNewIntent(intent);
-      Log.d("asdasd",intent.getData().toString());
-    }
+  public static Activity defaultActivityToOpen = null;
+  public static Activity activityToOpen = null;
 
-    @Override
-    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
-
-      Log.d("asdasd",intent.getData().toString());
-
-      if (requestCode == 10120) {
-      }
-    }
-  };
+  public static void setDefaultActivityToOpen(Activity ac){
+      defaultActivityToOpen = ac;
+      activityToOpen = ac;
+  }
   public RNEasyPushNotificationsModule(ReactApplicationContext reactContext) {
     super(reactContext);
     rc = reactContext;
-    reactContext.addActivityEventListener(mActivityEventListener);
-//    NotificationsService.setMainActivity(getReactApplicationContext().getBaseContext().getClass());
     this.init();
     BroadcastReceiver geoLocationReceiver = new BroadcastReceiver() {
       @Override
@@ -73,6 +62,13 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   public void init(){
     try{
       Log.d("init_init",isInit.toString());
+      if(activityToOpen == null){
+        if(defaultActivityToOpen == null){
+          activityToOpen = getCurrentActivity();
+        }else{
+          activityToOpen = defaultActivityToOpen;
+        }
+      }
       FirebaseApp.initializeApp(getReactApplicationContext().getApplicationContext());
 
       isInit = true;

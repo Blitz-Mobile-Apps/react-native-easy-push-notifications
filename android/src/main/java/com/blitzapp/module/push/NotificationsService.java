@@ -74,9 +74,9 @@ public class NotificationsService extends FirebaseMessagingService {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext(), "notify_001");
-        Intent i = new Intent(getApplicationContext(),RNEasyPushNotificationsModule.rc.getCurrentActivity().getClass());
+        Intent i = new Intent(getApplicationContext(),RNEasyPushNotificationsModule.activityToOpen.getClass());
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, 100, new Intent(this, RNEasyPushNotificationsModule.rc.getCurrentActivity().getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = PendingIntent.getActivity(this, 100, new Intent(this,RNEasyPushNotificationsModule.activityToOpen.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pi);
 
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
