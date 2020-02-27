@@ -1,6 +1,6 @@
 #import "RNEasyPushNotificationsModule.h"
 #import <React/RCTConvert.h>
-#import "FirebaseMessaging.h"
+#import <FirebaseMessaging.h>
 #import "Firebase.h"
 @import UserNotifications;
 extern NSString *device_id = NULL;
@@ -36,7 +36,7 @@ RCT_EXPORT_METHOD(registerForToken)
 NSLog(@"asdasd");
     [FIRApp configure];
     UIApplication *application = UIApplication.sharedApplication;
-    [FIRMessaging messaging].delegate = application.delegate;
+    [FIRMessaging messaging].delegate = self;
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
     
    if ([UNUserNotificationCenter class] != nil) {
