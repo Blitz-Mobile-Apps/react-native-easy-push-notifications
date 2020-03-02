@@ -20,14 +20,12 @@ RCT_EXPORT_MODULE(BlitzNotifications);
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"deviceRegisteredIOS",@"notificationReceived"];
+  return @[@"deviceRegisteredIOS",@"notificationReceived",@"notificationTapped"];
 }
 
 RCT_EXPORT_METHOD(getNotificationData:(RCTResponseSenderBlock)callback)
 {
-  NSLog(@"Device id from not %@",remoteNotification);
-          callback(@[@"remoteNotification"]);
-  
+    callback(@[@"remoteNotification",remoteNotification]);
 }
 RCT_EXPORT_METHOD(registerForToken)
 {
@@ -59,6 +57,7 @@ NSLog(@"asdasd");
    }
 
    [application registerForRemoteNotifications];
+      
    
      });
   
@@ -66,6 +65,7 @@ NSLog(@"asdasd");
 
 // [START receive_message]
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification {
+    
         remoteNotification = notification;
     NSLog(@"notificationReceived didReceiveRemoteNotification : %@", remoteNotification);
   [self sendEventWithName:@"notificationReceived" body: remoteNotification];
@@ -102,7 +102,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)notification
   /// when we tap on notif and app is in foreground
     NSLog(@"notificationReceived didReceiveRemoteNotification with completionhandler: %@", notification);
   remoteNotification = notification.notification.request.content.userInfo;
-  [self sendEventWithName:@"notificationReceived" body: remoteNotification];
+  [self sendEventWithName:@"notificationTapped" body: remoteNotification];
   completionHandler();
 }
 

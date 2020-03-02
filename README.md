@@ -1,6 +1,4 @@
 
-# WARNING ! Under Development
-## This package is currently under development, and the documentation is not yet ready
 # react-native-easy-push-notifications
 
 ## Getting started

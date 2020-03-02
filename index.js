@@ -42,26 +42,20 @@ export default {
             })
         } else {
             notificationModule.getLastNotificationData(notification => {
-                console.log('bno ',notification)
-                // try {
-                //     if (typeof notification === 'string') {
-                //         let data = JSON.parse(notification)
-                //         callback(data)
-                //     } else {
-                //         throw "Invalid data provided";
-                //     }
-                // } catch (e) {
-                //     errorCallback(e)
-                // }
+                try {
+                   callback(notification)
+                } catch (e) {
+                    errorCallback(e)
+                }
             })
         }
     },
     onMessageReceived: (callback) => {
             eventEmitter.addListener('notificationReceived', (event) => {
-                console.log(event)
+                console.log('event event ',event)
                 if (event) {
-                    let data = event
-                    callback(JSON.parse(data))
+                    let data = Platform.OS === 'ios' ? event : JSON.parse(data)
+                    callback(data);
                 }
             })
 
