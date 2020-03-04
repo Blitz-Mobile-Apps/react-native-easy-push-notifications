@@ -1,6 +1,7 @@
 package com.blitzapp.module.push;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -74,9 +75,16 @@ public class NotificationsService extends FirebaseMessagingService {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext(), "notify_001");
-        Intent i = new Intent(getApplicationContext(),RNEasyPushNotificationsModule.activityToOpen.getClass());
+
+        Activity act = RNEasyPushNotificationsModule.rc.getCurrentActivity();
+        if(RNEasyPushNotificationsModule.activityToOpen != null){
+             act = RNEasyPushNotificationsModule.activityToOpen;
+        }else{
+             act = RNEasyPushNotificationsModule.rc.getCurrentActivity();
+        }
+        Intent i = new Intent(getApplicationContext(),act.getClass());
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, 100, new Intent(this,RNEasyPushNotificationsModule.activityToOpen.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = PendingIntent.getActivity(this, 100, new Intent(this,act.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pi);
 
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
