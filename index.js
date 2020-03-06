@@ -9,21 +9,21 @@ const eventEmitter = new NativeEventEmitter(notificationModule);
 
 export default {
     getDeviceId: (callback) => {
-        if (Platform.OS === 'android') {
-            if (notificationModule) {
-                if (notificationModule.registerForToken) {
-                    notificationModule.registerForToken(deviceId => {
-                        callback(deviceId)
-                    })
-                } 
-            }
-        } else {
-            let event = eventEmitter.addListener("deviceRegisteredIOS", deviceId => {
+        // if (Platform.OS === 'android') {
+        //     if (notificationModule) {
+        //         if (notificationModule.registerForToken) {
+        //             notificationModule.registerForToken(deviceId => {
+        //                 callback(deviceId)
+        //             })
+        //         } 
+        //     }
+        // } else {
+            let event = eventEmitter.addListener("deviceRegistered", deviceId => {
                 callback(deviceId)
                 eventEmitter.removeSubscription(event)
             })
             notificationModule.registerForToken()
-        }
+        // }
     },
     getLastNotificationData: (callback, errorCallback) => {
         if (Platform.OS === 'android') {
@@ -54,7 +54,7 @@ export default {
             eventEmitter.addListener('notificationReceived', (event) => {
                 console.log('event event ',event)
                 if (event) {
-                    let data = Platform.OS === 'ios' ? event : JSON.parse(data)
+                    let data = Platform.OS === 'ios' ? event : JSON.parse(event)
                     callback(data);
                 }
             })

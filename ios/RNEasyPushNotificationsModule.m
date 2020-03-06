@@ -20,13 +20,13 @@ RCT_EXPORT_MODULE(BlitzNotifications);
 }
  
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"deviceRegisteredIOS",@"notificationReceived"];
+  return @[@"deviceRegistered",@"notificationReceived"];
 }
  
-RCT_EXPORT_METHOD(getNotificationData:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getLastNotificationData:(RCTResponseSenderBlock)callback)
 {
   NSLog(@"Device id from not %@",remoteNotification);
-          callback(@[@"remoteNotification"]);
+          callback(@[remoteNotification]);
   
 }
 RCT_EXPORT_METHOD(registerForToken)
@@ -64,7 +64,7 @@ RCT_EXPORT_METHOD(registerForToken)
  
    [application registerForRemoteNotifications];
       } else {
-          [self sendEventWithName:@"deviceRegisteredIOS" body:device_id];
+          [self sendEventWithName:@"deviceRegistered" body:device_id];
       }
      });
   
@@ -118,7 +118,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)notification
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
   device_id = fcmToken;
     NSLog(@"notificationReceived didReceiveMessage with device_id: %@", device_id);
-  [self sendEventWithName:@"deviceRegisteredIOS" body:fcmToken];
+  [self sendEventWithName:@"deviceRegistered" body:fcmToken];
   
 }
 // [END refresh_token]
@@ -141,6 +141,6 @@ didReceiveNotificationResponse:(UNNotificationResponse *)notification
  
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
   NSLog(@"APNs device token retrieved: %@", deviceToken);
-    [self sendEventWithName:@"deviceRegisteredIOS" body:deviceToken];
+    [self sendEventWithName:@"deviceRegistered" body:deviceToken];
 }
 @end

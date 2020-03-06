@@ -115,15 +115,18 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
     }
   }
   @ReactMethod
-  public void registerForToken(final Callback onRegister){
+  public void registerForToken(){
     if(isInit == false){
       this.init();
     }
     FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getCurrentActivity(),  new OnSuccessListener<InstanceIdResult>() {
       @Override
       public void onSuccess(InstanceIdResult instanceIdResult) {
+        if(deviceId == null){
         deviceId = instanceIdResult.getToken();
-        onRegister.invoke(deviceId);
+        }
+        sendMessage("deviceRegistered",deviceId);
+        // onRegister.invoke(deviceId);
       }
     });
 
