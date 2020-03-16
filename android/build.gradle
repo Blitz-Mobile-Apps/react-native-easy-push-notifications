@@ -19,7 +19,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 251
-        versionName "2.5.1"
+        versionName "2.5.2"
     }
     lintOptions {
         abortOnError false
