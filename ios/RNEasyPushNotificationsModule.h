@@ -18,5 +18,6 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
 didReceiveNotificationResponse:(UNNotificationResponse *)notification
          withCompletionHandler:(void(^)(void))completionHandler;
 - (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)notification;
+- (void) setRemoteNotification: (NSDictionary *) notification;
 @end
   

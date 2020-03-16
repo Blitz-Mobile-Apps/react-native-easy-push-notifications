@@ -39,7 +39,7 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   public static ReactContext rc;
   public static Activity defaultActivityToOpen = null;
   public static Activity activityToOpen = null;
-
+  public static  Bundle extras = null;
   public static void setDefaultActivityToOpen(Activity ac){
       defaultActivityToOpen = ac;
       activityToOpen = ac;
@@ -102,11 +102,66 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
     }/*from   w ww .j  a  v  a 2s .c  o m*/
     return map;
   }
+
+  public Class getMainActivityClass() {
+    String packageName = getReactApplicationContext().getPackageName();
+    Intent launchIntent = getReactApplicationContext().getPackageManager().getLaunchIntentForPackage(packageName);
+    String className = launchIntent.getComponent().getClassName();
+    try {
+      return Class.forName(className);
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public static void setExtras(Bundle data){
+    extras = data;
+  }
+
   @ReactMethod
   public void getLastNotificationData(Callback callback){
     if(isInit == false){
       this.init();
     }
+
+
+    if(extras != null){
+      JSONObject json = new JSONObject();
+      Set<String> keys = extras.keySet();
+      for (String key : keys) {
+        try {
+          // json.put(key, bundle.get(key)); see edit below
+          json.put(key, JSONObject.wrap(extras.get(key)));
+        } catch(JSONException e) {
+          //Handle exception here
+          Log.e("getLastNotificationData", e.getMessage() );
+        }
+      }
+      callback.invoke(json.toString());
+      extras = null;
+    }
+
+//    Class main =  getMainActivityClass();
+//    Intent i = main().getIntent();
+//    Bundle extras = i.getExtras();
+//    if (extras != null) {
+//      for (String key : extras.keySet()) {
+//        Object value = extras.get(key);
+//        Log.d("getLastNotificationData", "Extras received at onCreate:  Key: " + key + " Value: " + value);
+//      }
+//      String title = extras.getString("title");
+//      String message = extras.getString("body");
+//            if (message!=null && message.length()>0) {
+////                getIntent().removeExtra("body");
+//////                showNotificationInADialog(title, message);
+////                Log.d("MainActivity", "onCreate: ");
+//
+//              callback.invoke(String.valueOf(extras));
+//
+//            }
+//    }
+
     if(NotificationsService.message != null){
       if(NotificationsService.message.getData() != null){
         callback.invoke(new JSONObject(NotificationsService.message.getData()).toString());

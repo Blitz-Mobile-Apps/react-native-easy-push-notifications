@@ -76,7 +76,7 @@ public class NotificationsService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent i = new Intent(getApplicationContext(),RNEasyPushNotificationsModule.activityToOpen.getClass());
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, 100, new Intent(this,RNEasyPushNotificationsModule.activityToOpen.getClass()), PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pi = PendingIntent.getActivity(this, 100, new Intent(this,RNEasyPushNotificationsModule.activityToOpen.getClass()), PendingIntent.FLAG_ONE_SHOT);
         mBuilder.setContentIntent(pi);
 
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
@@ -129,9 +129,10 @@ public class NotificationsService extends FirebaseMessagingService {
                     getPackageManager().getApplicationLabel(getApplicationInfo()),
                     NotificationManager.IMPORTANCE_HIGH);
             mNotificationManager.createNotificationChannel(channel);
+            mBuilder.setAutoCancel(true);
             mBuilder.setChannelId(channelId);
         }
-        mBuilder.setPriority(10);
+//        mBuilder.setPriority(10);
 
         mNotificationManager.notify(0, mBuilder.build());
 

@@ -26,9 +26,11 @@ export default {
         // }
     },
     getLastNotificationData: (callback, errorCallback) => {
+        // console.log("getLastNotificationData",Platform.OS);
+        
         if (Platform.OS === 'android') {
             notificationModule.getLastNotificationData(notification => {
-                console.log(notification)
+                console.log("notification:",notification)
                 try {
                     if (typeof notification === 'string') {
                         let data = JSON.parse(notification)
@@ -41,6 +43,13 @@ export default {
                 }
             })
         } else {
+            eventEmitter.addListener('onNotificationTap', (event) => {
+                // console.log('event event ',event)
+                if (event) {
+                    let data = Platform.OS === 'ios' ? event : JSON.parse(event)
+                    callback(data);
+                }
+            })
             notificationModule.getLastNotificationData(notification => {
                 try {
                    callback(notification)

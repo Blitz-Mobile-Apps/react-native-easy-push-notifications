@@ -20,13 +20,17 @@ RCT_EXPORT_MODULE(BlitzNotifications);
 }
  
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"deviceRegistered",@"notificationReceived"];
+  return @[@"deviceRegistered",@"notificationReceived",@"onNotificationTap"];
 }
  
 RCT_EXPORT_METHOD(getLastNotificationData:(RCTResponseSenderBlock)callback)
 {
-  NSLog(@"Device id from not %@",remoteNotification);
-          callback(@[remoteNotification]);
+  NSLog(@"notificationReceived getLastNotificationData %@",remoteNotification);
+    if(remoteNotification != @"NULL"){
+
+                  callback(@[remoteNotification]);
+            remoteNotification = @"NULL";
+    }
   
 }
 RCT_EXPORT_METHOD(registerForToken)
@@ -81,7 +85,7 @@ RCT_EXPORT_METHOD(registerForToken)
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
       remoteNotification = notification;
   NSLog(@"notificationReceived didReceiveRemoteNotification with completionhandler: %@", remoteNotification);
-  [self sendEventWithName:@"notificationReceived" body: remoteNotification];
+  [self sendEventWithName:@"onNotificationTap" body: remoteNotification];
   completionHandler(UIBackgroundFetchResultNewData);
 }
 // [END receive_message]
@@ -108,7 +112,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)notification
   /// when we tap on notif and app is in foreground
     NSLog(@"notificationReceived didReceiveRemoteNotification with completionhandler: %@", notification);
   remoteNotification = notification.notification.request.content.userInfo;
-  [self sendEventWithName:@"notificationReceived" body: remoteNotification];
+  [self sendEventWithName:@"onNotificationTap" body: remoteNotification];
   completionHandler();
 }
  
@@ -131,10 +135,28 @@ didReceiveNotificationResponse:(UNNotificationResponse *)notification
   NSLog(@"notificationReceived didReceiveMessage with didReceiveMessage: %@", remoteNotification);
   [self sendEventWithName:@"notificationReceived" body: remoteNotification];
 }
- 
+
  
 // [END ios_10_data_message]
- 
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+//{
+//    if ( application.applicationState == UIApplicationStateInactive || application.applicationState == UIApplicationStateBackground  )
+//    {
+//         //opened from a push notification when the app was on background
+//        NSLog(@"userInfo->%@", [userInfo objectForKey:@"aps"]);
+//
+//    }
+//}
+
+-(void) setRemoteNotification:(NSDictionary *) notification
+{   NSLog(@"setRemoteNotification %@",notification);
+    remoteNotification = notification;
+      [self sendEventWithName:@"onNotificationTap" body: remoteNotification];
+  
+//  [self sendEventWithName:@"recievedFDL" body:did];
+//  dynamicLink = did;
+} 
+
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
   NSLog(@"Unable to register for remote notifications: %@", error);
 }
