@@ -1,16 +1,39 @@
 
 {
   "name": "react-native-easy-push-notifications",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "react-native"
+  "dependencies": {
+    "react-native":""
+  },
+  "bugs": {
+    "email": "alex.evans1230@gmail.com",
+    "url": "https://github.com/Blitz-Mobile-Apps/react-native-easy-push-notifications/issues"
+  },
+  "publisher": "Blitz Mobile Apps",
+  "contributors": [
+    "wadejohnson650@gmail.com","alex.evans1230@gmail.com","benjaminlogan420@gmail.com"
   ],
-  "author": "alex.evans123@gmail.com",
+  "homepage": "https://github.com/Blitz-Mobile-Apps/react-native-easy-push-notifications/",
+  "keywords": [
+    "react-native",
+    "firebase",
+    "push",
+    "push-notifications",
+    "notifications",
+    "cloud-messaging",
+    "easy push notifications",
+    "fcm",
+    "apns",
+    "easy cloud messaging",
+    "hybrid mobile app",
+    "firebase messaging"
+  ],
+  "author": "wadejohnson650@gmail.com",
   "license": "",
   "peerDependencies": {
   }
