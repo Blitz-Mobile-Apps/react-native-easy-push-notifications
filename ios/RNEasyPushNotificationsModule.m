@@ -22,7 +22,16 @@ RCT_EXPORT_MODULE(BlitzNotifications);
 - (NSArray<NSString *> *)supportedEvents {
   return @[@"deviceRegistered",@"notificationReceived",@"onNotificationTap"];
 }
- 
+
+RCT_EXPORT_METHOD(removeAllDeliveredNotifications) {
+    if (@available(iOS 10.0, *)) {
+        UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+        if (notificationCenter != nil) {
+            [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+        }
+    }
+}
+
 RCT_EXPORT_METHOD(getLastNotificationData:(RCTResponseSenderBlock)callback)
 {
   NSLog(@"notificationReceived getLastNotificationData %@",remoteNotification);

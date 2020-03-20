@@ -1,6 +1,7 @@
 package com.blitzapp.module.push;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -40,12 +41,16 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   public static Activity defaultActivityToOpen = null;
   public static Activity activityToOpen = null;
   public static  Bundle extras = null;
+  private NotificationManager notificationManager;
+
   public static void setDefaultActivityToOpen(Activity ac){
       defaultActivityToOpen = ac;
       activityToOpen = ac;
   }
   public RNEasyPushNotificationsModule(ReactApplicationContext reactContext) {
     super(reactContext);
+
+    this.notificationManager = (NotificationManager) reactContext.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
     rc = reactContext;
     this.init();
     BroadcastReceiver geoLocationReceiver = new BroadcastReceiver() {
@@ -185,5 +190,10 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
       }
     });
 
+  }
+
+  @ReactMethod
+  public void removeAllDeliveredNotifications(){
+    notificationManager.cancelAll();
   }
 }

@@ -77,6 +77,8 @@ export default {
         } else {
             console.warn('getLastNotificationData is only available on android platform')
         }
+    },
+    removeAllDeliveredNotifications: () => {
+        notificationModule.removeAllDeliveredNotifications();
     }
-
 }
