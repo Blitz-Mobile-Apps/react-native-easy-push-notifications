@@ -19,8 +19,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 254
-        versionName "2.5.4"
+        versionCode 256
+        versionName "2.5.6"
     }
     lintOptions {
         abortOnError false

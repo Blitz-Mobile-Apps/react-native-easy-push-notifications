@@ -1,4 +1,4 @@
-# react-native-easy-push-notifications
+# [react-native-easy-push-notifications](https://www.npmjs.com/package/react-native-easy-push-notifications)
  
 React-Native-Easy-Push-Notifications is developed to help the react-native developers in speeding-up their development process. This package leverages the developer from implementing notificaitons clasically. The implementation is kept point-to-point to provide easy usage to the developer. Follow the guide below to get you up and running with the notifications:
 

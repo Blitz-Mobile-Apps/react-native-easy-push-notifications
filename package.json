@@ -1,7 +1,7 @@
 
 {
   "name": "react-native-easy-push-notifications",
-  "version": "2.5.5",
+  "version": "2.5.6",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -31,7 +31,11 @@
     "apns",
     "easy cloud messaging",
     "hybrid mobile app",
-    "firebase messaging"
+    "firebase messaging",
+    "react-native-push-notifications",
+    "react-native-push",
+    "react-native-notifications",
+    "react-native-cloud-messaging"
   ],
   "author": "wadejohnson650@gmail.com",
   "license": "",
