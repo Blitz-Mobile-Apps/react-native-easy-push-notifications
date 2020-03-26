@@ -1,5 +1,11 @@
 # [react-native-easy-push-notifications](https://www.npmjs.com/package/react-native-easy-push-notifications)
- 
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+![Supports Android and iOS](https://img.shields.io/badge/platforms-android%20|%20ios-lightgrey.svg?style=flat-square)
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+[![NPM](https://img.shields.io/npm/dm/react-native-easy-push-notifications)](https://www.npmjs.com/package/react-native-easy-push-notifications)
+[![Version](https://img.shields.io/npm/v/react-native-easy-push-notifications)](https://www.npmjs.com/package/react-native-easy-push-notifications)
+
+
 React-Native-Easy-Push-Notifications is developed to help the react-native developers in speeding-up their development process. This package leverages the developer from implementing notificaitons clasically. The implementation is kept point-to-point to provide easy usage to the developer. Follow the guide below to get you up and running with the notifications:
 
 ### Installation
