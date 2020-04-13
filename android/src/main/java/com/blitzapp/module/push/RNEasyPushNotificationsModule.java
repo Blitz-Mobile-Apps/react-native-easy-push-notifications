@@ -46,6 +46,7 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   public static void setDefaultActivityToOpen(Activity ac){
       defaultActivityToOpen = ac;
       activityToOpen = ac;
+    NotificationsService.activityToOpen = ac;
   }
   public RNEasyPushNotificationsModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -70,8 +71,10 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
       if(activityToOpen == null){
         if(defaultActivityToOpen == null){
           activityToOpen = getCurrentActivity();
+          NotificationsService.activityToOpen =activityToOpen;
         }else{
           activityToOpen = defaultActivityToOpen;
+          NotificationsService.activityToOpen =defaultActivityToOpen;
         }
       }
       FirebaseApp.initializeApp(getReactApplicationContext().getApplicationContext());

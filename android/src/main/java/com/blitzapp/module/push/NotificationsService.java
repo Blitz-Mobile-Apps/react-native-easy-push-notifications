@@ -1,6 +1,7 @@
 package com.blitzapp.module.push;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -25,14 +26,16 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
-//import com.blitzapp.module.push.RNEasyPushNotificationsModule.rc;
+import com.blitzapp.module.push.RNEasyPushNotificationsModule;
 public class NotificationsService extends FirebaseMessagingService {
     public static RemoteMessage message;
     public static String EXTRA_PAYLOAD = null;
@@ -40,17 +43,138 @@ public class NotificationsService extends FirebaseMessagingService {
     public static String summaryText = "This is summary";
     private NotificationManager mNotificationManager;
     private static Class mainActivity;
+
+    public static String titleKey = "title";
+    public static String bodyKey = "body";
+
+    public static String tile = "title";
+    public static String body = "body";
+
+    public static JSONObject searchableMap;
+    public static Activity activityToOpen;
     public static void setMainActivity(Class activity){
         mainActivity = activity;
+    }
+    public void parseToSearchableMap(JSONObject json){
+        Iterator<String> keys = json.keys();
+        while(keys.hasNext()) {
+            String key = keys.next();
+            try {
+                String str = json.getString(key);
+                searchableMap.put(key,str);
+                try{
+                    JSONObject obj = new JSONObject(str);
+                    parseToSearchableMap(obj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         message = remoteMessage;
+        if(message.getNotification() != null){
+            showNotification();
+        }else{
+            searchableMap = new JSONObject(message.getData());
+            parseToSearchableMap(searchableMap);
+        }
+        Iterator<String> keys = searchableMap.keys();
+        while(keys.hasNext()) {
+            String key = keys.next();
+            try {
+                Log.d("DATA_MSG",searchableMap.getString(key));
 
-        showNotification();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            showDataMessage(searchableMap.getString("senderName"),searchableMap.getString("msg"),searchableMap.getString("image"),message.getData(),getApplicationContext());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         sendMessage();
-
     }
+
+    public void showDataMessage (String title, String body, String image ,Map fullMessage, Context context) {
+        if(fullMessage != null){
+            EXTRA_PAYLOAD = fullMessage.toString();
+        }
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        ComponentName cn = am.getRunningTasks(3).get(0).baseActivity;
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context, "notify_002");
+//        if(activityToOpen != null){
+            Intent i = new Intent(context,RNEasyPushNotificationsModule.activityToOpen.getClass());
+            i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent pi = PendingIntent.getActivity(context, 100, new Intent(context,activityToOpen.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(pi);
+//        }
+
+
+        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+        bigText.bigText(body);
+        bigText.setBigContentTitle(title);
+        bigText.setSummaryText(title);
+//        if(message.getNotification().getColor() != null){
+//            String colorString = message.getNotification().getColor();
+//            mBuilder.setColor(Color.parseColor(colorString));
+//        }
+
+
+        try
+        {
+            PackageManager manager = context.getPackageManager();
+            Resources resources = manager.getResourcesForApplication(context.getPackageName());
+            int resId = resources.getIdentifier("notifications_icon", "drawable", context.getPackageName());
+            mBuilder.setSmallIcon(resId);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        ;
+        mBuilder.setContentTitle(title);
+        mBuilder.setContentText(body);
+        mBuilder.setPriority(Notification.PRIORITY_MAX);
+        mBuilder.setStyle(bigText);
+//        if(message.getNotification().getImageUrl() != null){
+            try {
+                URL url = new URL(image);
+                Log.d("IMAGE_URL",url.toString());
+                Bitmap img = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                mBuilder.setLargeIcon(img);
+            } catch(IOException e) {
+
+            }
+//        }
+
+
+        mNotificationManager =
+                (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            String channelId = "blitz_remote_data_message_channel";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    getPackageManager().getApplicationLabel(getApplicationInfo()),
+                    NotificationManager.IMPORTANCE_HIGH);
+            mNotificationManager.createNotificationChannel(channel);
+            mBuilder.setAutoCancel(true);
+            mBuilder.setChannelId(channelId);
+        }
+        mBuilder.setPriority(Notification.PRIORITY_MAX);
+        mNotificationManager.notify(0, mBuilder.build());
+    }
+
     private void sendMessage() {
         try {
             Intent intent = new Intent("notificationReceived");
@@ -132,7 +256,6 @@ public class NotificationsService extends FirebaseMessagingService {
             mBuilder.setAutoCancel(true);
             mBuilder.setChannelId(channelId);
         }
-//        mBuilder.setPriority(10);
 
         mNotificationManager.notify(0, mBuilder.build());
 
