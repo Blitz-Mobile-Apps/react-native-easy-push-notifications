@@ -46,7 +46,6 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   public static void setDefaultActivityToOpen(Activity ac){
       defaultActivityToOpen = ac;
       activityToOpen = ac;
-    NotificationsService.activityToOpen = ac;
   }
   public RNEasyPushNotificationsModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -62,6 +61,26 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
       }
     };
     LocalBroadcastManager.getInstance(getReactApplicationContext()).registerReceiver(geoLocationReceiver, new IntentFilter("notificationReceived"));
+    BroadcastReceiver notificationTapReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+
+//        Bundle extra = intent.getBundleExtra("data");
+//        JSONObject json = new JSONObject();
+//        Set<String> keys = extra.keySet();
+//        for (String key : keys) {
+//          try {
+//            // json.put(key, bundle.get(key)); see edit below
+//            json.put(key, JSONObject.wrap(extra.get(key)));
+//          } catch(JSONException e) {
+//            //Handle exception here
+//          }
+//        }
+        String json = intent.getStringExtra("data");
+        sendMessage("onNotificationTap",json);
+      }
+    };
+    LocalBroadcastManager.getInstance(getReactApplicationContext()).registerReceiver(notificationTapReceiver, new IntentFilter("onNotificationTap"));
 
   }
   @ReactMethod
@@ -71,10 +90,8 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
       if(activityToOpen == null){
         if(defaultActivityToOpen == null){
           activityToOpen = getCurrentActivity();
-          NotificationsService.activityToOpen =activityToOpen;
         }else{
           activityToOpen = defaultActivityToOpen;
-          NotificationsService.activityToOpen =defaultActivityToOpen;
         }
       }
       FirebaseApp.initializeApp(getReactApplicationContext().getApplicationContext());
@@ -125,6 +142,7 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
 
   public static void setExtras(Bundle data){
     extras = data;
+//    sendMessage("onNotificationTap",deviceId);
   }
 
   @ReactMethod
@@ -182,16 +200,20 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
     if(isInit == false){
       this.init();
     }
-    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getCurrentActivity(),  new OnSuccessListener<InstanceIdResult>() {
-      @Override
-      public void onSuccess(InstanceIdResult instanceIdResult) {
-        if(deviceId == null){
-        deviceId = instanceIdResult.getToken();
+    try {
+      FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(getCurrentActivity(), new OnSuccessListener<InstanceIdResult>() {
+        @Override
+        public void onSuccess(InstanceIdResult instanceIdResult) {
+          if (deviceId == null) {
+            deviceId = instanceIdResult.getToken();
+          }
+          sendMessage("deviceRegistered", deviceId);
+          // onRegister.invoke(deviceId);
         }
-        sendMessage("deviceRegistered",deviceId);
-        // onRegister.invoke(deviceId);
-      }
-    });
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
   }
 

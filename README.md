@@ -71,6 +71,45 @@ Android setup is a two step process. The first step can be done in two ways:
   - Place the icon generated in the drawable folder.
   - Go to the MainActivity.java and add following lines of code:
     - Add this to imports: ```import com.blitzapp.module.push.RNEasyPushNotificationsModule;```
+    - Add this function :  
+    ```sh
+    @Override
+    public void onNewIntent(Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            for (String key : extras.keySet()) {
+                Object value = extras.get(key);
+                Log.d("MainActivity", "Extras received at onNewIntent:  Key: " + key + " Value: " + value);
+            }
+
+            String title = extras.getString("title");
+            String message = extras.getString("body");
+            if (message != null && message.length() > 0) {
+                RNEasyPushNotificationsModule.setExtras(extras);
+            }
+            JSONObject json = new JSONObject();
+            Set<String> keys = extras.keySet();
+            for (String key : keys) {
+                try {
+                    json.put(key, JSONObject.wrap(extras.get(key)));
+                } catch(JSONException e) {
+                    //Handle exception here
+                }
+            }
+            String data = "";
+            try {
+                data = json.getString("data");
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                data = json.toString();
+            }
+            Intent i = new Intent("onNotificationTap");
+
+            i.putExtra("data", data);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+        }
+    }
     - Add this segment to onCreate method:
     ```sh
     if(RNEasyPushNotificationsModule.activityToOpen == null){
