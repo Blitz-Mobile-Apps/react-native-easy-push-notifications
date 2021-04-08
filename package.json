@@ -7,9 +7,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "react-native":""
-  },
   "bugs": {
     "email": "alex.evans1230@gmail.com",
     "url": "https://github.com/Blitz-Mobile-Apps/react-native-easy-push-notifications/issues"
