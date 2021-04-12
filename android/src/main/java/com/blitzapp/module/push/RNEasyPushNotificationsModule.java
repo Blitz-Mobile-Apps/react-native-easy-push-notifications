@@ -44,8 +44,8 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
   private NotificationManager notificationManager;
 
   public static void setDefaultActivityToOpen(Activity ac){
-      defaultActivityToOpen = ac;
-      activityToOpen = ac;
+    defaultActivityToOpen = ac;
+    activityToOpen = ac;
   }
   public RNEasyPushNotificationsModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -81,7 +81,6 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
       }
     };
     LocalBroadcastManager.getInstance(getReactApplicationContext()).registerReceiver(notificationTapReceiver, new IntentFilter("onNotificationTap"));
-
   }
   @ReactMethod
   public void init(){
@@ -142,7 +141,6 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
 
   public static void setExtras(Bundle data){
     extras = data;
-//    sendMessage("onNotificationTap",deviceId);
   }
 
   @ReactMethod
@@ -200,20 +198,16 @@ public class RNEasyPushNotificationsModule extends ReactContextBaseJavaModule {
     if(isInit == false){
       this.init();
     }
-    try {
-      FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(getCurrentActivity(), new OnSuccessListener<InstanceIdResult>() {
-        @Override
-        public void onSuccess(InstanceIdResult instanceIdResult) {
-          if (deviceId == null) {
-            deviceId = instanceIdResult.getToken();
-          }
-          sendMessage("deviceRegistered", deviceId);
-          // onRegister.invoke(deviceId);
+    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getCurrentActivity(),  new OnSuccessListener<InstanceIdResult>() {
+      @Override
+      public void onSuccess(InstanceIdResult instanceIdResult) {
+        if(deviceId == null){
+          deviceId = instanceIdResult.getToken();
         }
-      });
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+        sendMessage("deviceRegistered",deviceId);
+        // onRegister.invoke(deviceId);
+      }
+    });
 
   }
 

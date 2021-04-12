@@ -32,6 +32,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
+
+
+
 //import com.blitzapp.module.push.RNEasyPushNotificationsModule.rc;
 public class NotificationsService extends FirebaseMessagingService {
     public static RemoteMessage message;
@@ -39,18 +43,24 @@ public class NotificationsService extends FirebaseMessagingService {
     public static Map notificationData;
     public static String summaryText = "This is summary";
     private NotificationManager mNotificationManager;
+    private Map<String, String> map = new HashMap<String, String>();
     private static Class mainActivity;
     public static void setMainActivity(Class activity){
         mainActivity = activity;
     }
+    private final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(110, TimeUnit.SECONDS).build();
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         message = remoteMessage;
-
-        showNotification();
+        if(remoteMessage.getNotification() != null){
+            showNotification();
+        }
         sendMessage();
 
     }
+
+
+
     private void sendMessage() {
         try {
             Intent intent = new Intent("notificationReceived");
@@ -76,9 +86,12 @@ public class NotificationsService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent i = new Intent(getApplicationContext(),RNEasyPushNotificationsModule.activityToOpen.getClass());
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        i.putExtra("data",new JSONObject(message.getData()).toString());
-        PendingIntent pi = PendingIntent.getActivity(this, 100,i, PendingIntent.FLAG_ONE_SHOT);
+        if(message.getData() != null) {
+            i.putExtra("data", new JSONObject(message.getData()).toString());
+        }
+        PendingIntent pi = PendingIntent.getActivity(this, 100,i, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pi);
+        Log.d("remoteMessage.getNoti: ", String.valueOf(message.getNotification()));
 
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
         bigText.bigText(message.getNotification().getBody());
@@ -102,7 +115,7 @@ public class NotificationsService extends FirebaseMessagingService {
             e.printStackTrace();
         }
 
-;
+        ;
         mBuilder.setContentTitle(message.getNotification().getTitle());
         mBuilder.setContentText(message.getNotification().getBody());
         mBuilder.setPriority(Notification.PRIORITY_MAX);
