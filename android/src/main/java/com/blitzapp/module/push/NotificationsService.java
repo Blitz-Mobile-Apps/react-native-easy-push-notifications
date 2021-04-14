@@ -48,7 +48,6 @@ public class NotificationsService extends FirebaseMessagingService {
     public static void setMainActivity(Class activity){
         mainActivity = activity;
     }
-    private final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(110, TimeUnit.SECONDS).build();
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         message = remoteMessage;
