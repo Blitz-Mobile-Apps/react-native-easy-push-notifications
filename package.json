@@ -1,7 +1,7 @@
 
 {
   "name": "react-native-easy-push-notifications",
-  "version": "3.0.2",
+  "version": "4.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,7 @@
     "push-notifications",
     "notifications",
     "cloud-messaging",
+    "firebase-messaging",
     "easy push notifications",
     "fcm",
     "apns",

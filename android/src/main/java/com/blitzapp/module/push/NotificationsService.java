@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -28,127 +29,92 @@ import com.google.firebase.messaging.RemoteMessage;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
-
-
-
-//import com.blitzapp.module.push.RNEasyPushNotificationsModule.rc;
 public class NotificationsService extends FirebaseMessagingService {
-    public static RemoteMessage message;
     public static String EXTRA_PAYLOAD = null;
     public static Map notificationData;
     public static String summaryText = "This is summary";
-    private NotificationManager mNotificationManager;
     private Map<String, String> map = new HashMap<String, String>();
     private static Class mainActivity;
     public static void setMainActivity(Class activity){
         mainActivity = activity;
     }
+    public void processMessage(RemoteMessage remoteMessage){}
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        message = remoteMessage;
         if(remoteMessage.getNotification() != null){
-            showNotification();
-        }
-        sendMessage();
-
-    }
-
-
-
-    private void sendMessage() {
-        try {
-            Intent intent = new Intent("notificationReceived");
-            if(message.getData() != null){
-                intent.putExtra("data",new JSONObject(message.getData()).toString());
+            showNotification(remoteMessage);
+        } else{
+            if (remoteMessage.getNotification() == null && remoteMessage.getData() != null) {
+                processMessage(remoteMessage);
             }
-
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("Firebase service", e.getMessage());
         }
     }
-    @SuppressLint("NewApi")
-    public void showNotification(){
-        if(message.getData() != null){
-            EXTRA_PAYLOAD = message.getData().toString();
+    public void showNotification(RemoteMessage remoteMessage){
+        String data = null;
+        if(remoteMessage.getData() != null){
+          data =  new JSONObject(remoteMessage.getData()).toString();
         }
-        ActivityManager am = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        ComponentName cn = am.getRunningTasks(3).get(0).baseActivity;
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(getApplicationContext(), "notify_001");
-        Intent i = new Intent(getApplicationContext(),RNEasyPushNotificationsModule.activityToOpen.getClass());
-        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        if(message.getData() != null) {
-            i.putExtra("data", new JSONObject(message.getData()).toString());
+        ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        ComponentName cn = activityManager.getAppTasks().get(0).getTaskInfo().baseActivity;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "blitz_default_chanel")
+                .setPriority(NotificationCompat.PRIORITY_MAX);
+        if(remoteMessage.getNotification().getChannelId() != null){
+            builder.setChannelId(remoteMessage.getNotification().getChannelId());
         }
-        PendingIntent pi = PendingIntent.getActivity(this, 100,i, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pi);
-        Log.d("remoteMessage.getNoti: ", String.valueOf(message.getNotification()));
-
-        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-        bigText.bigText(message.getNotification().getBody());
-        bigText.setBigContentTitle(message.getNotification().getTitle());
-        bigText.setSummaryText(message.getNotification().getTitle());
-        if(message.getNotification().getColor() != null){
-            String colorString = message.getNotification().getColor();
-            mBuilder.setColor(Color.parseColor(colorString));
+        if(remoteMessage.getNotification() != null){
+            builder.setContentTitle(remoteMessage.getNotification().getTitle());
+            builder.setContentText(remoteMessage.getNotification().getBody());
         }
+        builder.setAutoCancel(true);
 
-
-        try
-        {
+        try {
             PackageManager manager = getPackageManager();
             Resources resources = manager.getResourcesForApplication(getApplicationContext().getPackageName());
-            int resId = resources.getIdentifier("notifications_icon", "drawable", getApplicationContext().getPackageName());
-            mBuilder.setSmallIcon(resId);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        ;
-        mBuilder.setContentTitle(message.getNotification().getTitle());
-        mBuilder.setContentText(message.getNotification().getBody());
-        mBuilder.setPriority(Notification.PRIORITY_MAX);
-        mBuilder.setStyle(bigText);
-        if(message.getNotification().getImageUrl() != null){
-            try {
-                URL url = new URL(message.getNotification().getImageUrl().toString());
-                Log.d("IMAGE_URL",url.toString());
+            int smallIconId = resources.getIdentifier("notifications_icon", "drawable", getApplicationContext().getPackageName());
+            builder.setSmallIcon(smallIconId);
+            if(remoteMessage.getNotification().getImageUrl() != null){
+                URL url = new URL(remoteMessage.getNotification().getImageUrl().toString());
                 Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                mBuilder.setLargeIcon(image);
-            } catch(IOException e) {
-
+                builder.setLargeIcon(image);
             }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w("BLITZ_NOTIFICATIONS__ icon not applied",e.getMessage());
+        } catch (MalformedURLException e) {
+            Log.w("BLITZ_NOTIFICATIONS__ iconMalformedURLException",e.getMessage());
+        } catch (IOException e) {
+            Log.w("BLITZ_NOTIFICATIONS__ iconIOException",e.getMessage());
         }
-
-
-        mNotificationManager =
+        Intent intent = new Intent(getApplicationContext(), cn.getClass());
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        if(data != null){
+            intent.putExtra("data",data);
+        }
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        builder.setContentIntent(pendingIntent);
+        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+        bigText.bigText(remoteMessage.getNotification().getBody());
+        bigText.setBigContentTitle(remoteMessage.getNotification().getTitle());
+        bigText.setSummaryText(remoteMessage.getNotification().getBody());
+        if(remoteMessage.getNotification().getColor() != null){
+            String colorString = remoteMessage.getNotification().getColor();
+            builder.setColor(Color.parseColor(colorString));
+        }
+        builder.setStyle(bigText);
+        NotificationManager mNotificationManager =
                 (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
-            String channelId = "blitz_remote_notification_channel";
+            String channelId = "blitz_default_chanel";
             NotificationChannel channel = new NotificationChannel(
                     channelId,
                     getPackageManager().getApplicationLabel(getApplicationInfo()),
                     NotificationManager.IMPORTANCE_HIGH);
             mNotificationManager.createNotificationChannel(channel);
-            mBuilder.setAutoCancel(true);
-            mBuilder.setChannelId(channelId);
         }
-//        mBuilder.setPriority(10);
-
-        mNotificationManager.notify(0, mBuilder.build());
-
-
+        mNotificationManager.notify(0,builder.build());
     }
 }
